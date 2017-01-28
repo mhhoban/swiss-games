@@ -47,7 +47,8 @@ def registerPlayer(name):
     DB = connect()
     cursor = DB.cursor()
 
-    cursor.execute("INSERT INTO player_registry (player_name) VALUES ('%s')" % name)
+    cursor.execute("INSERT INTO player_registry (player_name) VALUES "
+                   "(%s)", (name))
 
     DB.commit()
 
@@ -56,8 +57,10 @@ def registerPlayer(name):
     player_id = cursor.fetchall()[0][0]
 
     # register player in wins and matches tables:
-    cursor.execute("INSERT INTO player_wins (player_id, wins) VALUES ('%s', 0)" % player_id)
-    cursor.execute("INSERT INTO player_matches (player_id, matches) VALUES ('%s', 0)" % player_id)
+    cursor.execute("INSERT INTO player_wins (player_id, wins) VALUES (%s, 0)",
+                   (player_id))
+    cursor.execute("INSERT INTO player_matches (player_id, matches) "
+                   "VALUES (%s, 0)", (player_id))
 
     DB.commit()
     DB.close()

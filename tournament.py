@@ -65,9 +65,7 @@ def registerPlayer(name):
     cursor = DB.cursor()
 
     cursor.execute("INSERT INTO player_registry (player_name) VALUES "
-                   "(%s)", (name))
-
-    DB.commit()
+                   "(%s)", (name,))
 
     # get id assigned to player:
     cursor.execute("SELECT MAX(player_id) from player_registry")
@@ -75,9 +73,9 @@ def registerPlayer(name):
 
     # register player in wins and matches tables:
     cursor.execute("INSERT INTO player_wins (player_id, wins) VALUES (%s, 0)",
-                   (player_id))
+                   (player_id,))
     cursor.execute("INSERT INTO player_matches (player_id, matches) "
-                   "VALUES (%s, 0)", (player_id))
+                   "VALUES (%s, 0)", (player_id,))
 
     DB.commit()
     DB.close()
@@ -105,8 +103,40 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
- 
- 
+
+    # increment winner wins:
+
+    DB = connect()
+    cursor = DB.cursor()
+
+    cursor.execute("SELECT wins FROM player_wins WHERE player_id = %s",
+                   (winner,))
+
+    new_wins = (cursor.fetchall()[0][0]) + 1
+    cursor.execute("UPDATE player_wins SET wins = %s WHERE player_id = %s",
+                   (new_wins, winner))
+
+    # increment winner matches:
+
+    cursor.execute("SELECT matches FROM player_matches WHERE player_id = %s",
+                   (winner,))
+    new_matches = (cursor.fetchall()[0][0]) + 1
+    cursor.execute("UPDATE player_matches SET matches = %s WHERE player_id = %s",
+                   (new_matches, winner))
+
+    # increment loser matches:
+
+    cursor.execute("SELECT matches FROM player_matches WHERE player_id = %s",
+                   (loser,))
+    new_matches = (cursor.fetchall()[0][0]) + 1
+    cursor.execute("UPDATE player_matches SET matches = %s WHERE player_id = %s",
+                   (new_matches, loser))
+
+    # commit changes, close connection
+    DB.commit()
+    DB.close()
+
+
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
   

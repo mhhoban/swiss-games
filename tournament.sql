@@ -7,18 +7,18 @@
 -- these lines here.
 
 
-CREATE TABLE names_table (
+CREATE TABLE player_registry (
     player_id serial PRIMARY KEY,
     player_name varchar(80)
 );
 
-CREATE TABLE wins_table (
-    player_id integer PRIMARY KEY,
+CREATE TABLE player_wins (
+    player_id serial PRIMARY KEY,
     wins integer
 );
 
-CREATE TABLE matches_table (
-    player_id integer PRIMARY KEY,
+CREATE TABLE player_matches (
+    player_id serial PRIMARY KEY,
     matches integer
 );
 

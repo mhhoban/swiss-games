@@ -33,11 +33,21 @@ def registerPlayer(name):
       name: the player's full name (need not be unique).
     """
 
+    # establish db connection
     DB = connect()
-
     cursor = DB.cursor()
 
-    cursor.execute("INSERT INTO names_table (player_name) VALUES ('%s')" % name)
+    cursor.execute("INSERT INTO player_registry (player_name) VALUES ('%s')" % name)
+
+    DB.commit()
+
+    # get id assigned to player
+    cursor.execute("SELECT MAX(player_id) from player_registry")
+    player_id = cursor.fetchall()[0][0]
+
+    cursor.execute("INSERT INTO player_wins (player_id, wins) VALUES ('%s', 0)" % player_id)
+    cursor.execute("INSERT INTO player_matches (player_id, matches) VALUES ('%s', 0)" % player_id)
+
     DB.commit()
     DB.close()
 

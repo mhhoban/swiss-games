@@ -166,4 +166,18 @@ def swissPairings():
         name2: the second player's name
     """
 
+    # fetch current standings:
+
+    standings = playerStandings()
+    players = len(standings)
+
+    import pdb
+    pdb.set_trace()
+
+    pairs = [(standings[x][0], standings[x][1],
+              standings[x+1][0], standings[x+1][1])
+             for x in range(players) if x % 2 == 0]
+
+    return pairs
+
 

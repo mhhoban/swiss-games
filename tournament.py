@@ -14,9 +14,25 @@ def connect():
 def deleteMatches():
     """Remove all the match records from the database."""
 
+    DB = connect()
+    cursor = DB.cursor()
+
+    cursor.execute("DELETE FROM player_matches *")
+    cursor.execute("DELETE FROM player_wins *")
+    DB.commit()
+    DB.close()
+
 
 def deletePlayers():
     """Remove all the player records from the database."""
+
+    deleteMatches()
+
+    DB = connect()
+    cursor = DB.cursor()
+    cursor.execute("DELETE FROM player_registry *")
+    DB.commit()
+    DB.close()
 
 
 def countPlayers():
@@ -29,6 +45,7 @@ def countPlayers():
     # fetch number of players registered
     cursor.execute("SELECT MAX(player_id) from player_registry")
     player_count = cursor.fetchall()[0][0]
+    DB.close()
 
     return player_count
 

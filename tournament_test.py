@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 #
+# File provided by Udacity as guide for project completion.
+#
 # Test cases for tournament.py
 # These tests are not exhaustive, but they should cover the majority of cases.
 #
@@ -17,6 +19,7 @@ def testCount():
     deleteMatches()
     deletePlayers()
     c = countPlayers()
+
     if c == '0':
         raise TypeError(
             "countPlayers should return numeric zero, not string '0'.")
@@ -94,6 +97,8 @@ def testReportMatches():
     print "7. After a match, players have updated standings."
     deleteMatches()
     standings = playerStandings()
+
+
     if len(standings) != 4:
         raise ValueError("Match deletion should not change number of players in standings.")
     for (i, n, w, m) in standings:

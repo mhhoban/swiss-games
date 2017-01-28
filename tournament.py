@@ -17,8 +17,8 @@ def deleteMatches():
     DB = connect()
     cursor = DB.cursor()
 
-    cursor.execute("DELETE FROM player_matches *")
-    cursor.execute("DELETE FROM player_wins *")
+    cursor.execute("UPDATE player_matches SET matches = 0")
+    cursor.execute("UPDATE player_wins SET wins = 0")
     DB.commit()
     DB.close()
 
@@ -43,7 +43,7 @@ def countPlayers():
     cursor = DB.cursor()
 
     # fetch number of players registered
-    cursor.execute("SELECT MAX(player_id) from player_registry")
+    cursor.execute("SELECT count(*) from player_registry")
     player_count = cursor.fetchall()[0][0]
     DB.close()
 
@@ -170,9 +170,6 @@ def swissPairings():
 
     standings = playerStandings()
     players = len(standings)
-
-    import pdb
-    pdb.set_trace()
 
     pairs = [(standings[x][0], standings[x][1],
               standings[x+1][0], standings[x+1][1])

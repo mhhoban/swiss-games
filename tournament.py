@@ -22,8 +22,7 @@ def deleteMatches():
 
     DB, cursor = connect()
 
-    cursor.execute("UPDATE player_matches SET matches = 0")
-    cursor.execute("UPDATE player_wins SET wins = 0")
+    cursor.execute("TRUNCATE tournament_matches")
     DB.commit()
     DB.close()
 
@@ -46,7 +45,7 @@ def countPlayers():
 
     # fetch number of players registered
     cursor.execute("SELECT count(*) from player_registry")
-    player_count = cursor.fetchone()
+    player_count = cursor.fetchone()[0]
     DB.close()
 
     return player_count
@@ -85,17 +84,13 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-
     DB, cursor = connect()
 
-    cursor.execute("select a.player_id, a.player_name, b.wins, c.matches "
-                   "from player_registry as a, player_wins as b, "
-                   "player_matches as c where a.player_id = b.player_id and"
-                   " b.player_id = c.player_id ORDER BY wins DESC, "
-                   "matches DESC")
+    cursor.execute("select * from standings")
 
     standings = [(row[0], row[1], row[2], row[3]) for row in cursor.fetchall()]
 
+    DB.close()
     return standings
 
 

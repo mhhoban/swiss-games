@@ -21,21 +21,22 @@ CREATE TABLE tournament_matches (
     loser int REFERENCES player_registry(player_id)
 );
 
-CREATE VIEW winners as
-SELECT a.player_id, a.player_name, COUNT(b.winner) as wins
-FROM player_registry AS a, tournament_matches AS b
-WHERE a.player_id = b.winner
-GROUP BY player_id
-ORDER BY wins DESC;
 
-CREATE VIEW matches as
-SELECT a.player_id, a.player_name, COUNT(b.winner) as match_num
-FROM player_registry AS a, tournament_matches AS b
-WHERE a.player_id = b.winner or a.player_id = b.loser
+CREATE VIEW winners AS
+SELECT a.player_id, a.player_name, COUNT(b.winner) as wins
+FROM player_registry as a LEFT JOIN tournament_matches as b
+ON a.player_id = b.winner
+group by player_id;
+
+CREATE VIEW matches AS
+SELECT a.player_id, a.player_name, COUNT(b.winner) AS match_num
+FROM player_registry AS a LEFT JOIN tournament_matches AS b
+ON a.player_id = b.winner OR a.player_id = b.loser
 GROUP BY player_id;
 
-CREATE VIEW standings as
-SELECT a.player_id, a.player_name, b.wins, c.match_num
-FROM player_registry AS a, winners AS b, matches AS c
-WHERE a.player_id = b.player_id and b.player_id = c.player_id
+CREATE VIEW standings AS
+SELECT a.player_id, a.player_name, a.wins, b.match_num
+FROM matches AS b LEFT JOIN winners AS a
+on a.player_id = b.player_id
 ORDER BY wins DESC;
+

@@ -121,28 +121,8 @@ def reportMatch(winner, loser):
 
     DB, cursor = connect()
 
-    cursor.execute("SELECT wins FROM player_wins WHERE player_id = %s",
-                   (winner,))
-
-    new_wins = (cursor.fetchall()[0][0]) + 1
-    cursor.execute("UPDATE player_wins SET wins = %s WHERE player_id = %s",
-                   (new_wins, winner))
-
-    # increment winner matches:
-
-    cursor.execute("SELECT matches FROM player_matches WHERE player_id = %s",
-                   (winner,))
-    new_matches = (cursor.fetchall()[0][0]) + 1
-    cursor.execute("UPDATE player_matches SET matches = %s WHERE player_id "
-                   "= %s", (new_matches, winner))
-
-    # increment loser matches:
-
-    cursor.execute("SELECT matches FROM player_matches WHERE player_id = %s",
-                   (loser,))
-    new_matches = (cursor.fetchall()[0][0]) + 1
-    cursor.execute("UPDATE player_matches SET matches = %s WHERE player_id "
-                   "= %s", (new_matches, loser))
+    cursor.execute("INSERT INTO tournament_matches (winner, loser) VALUES "
+                   "(%s, %s)", (winner, loser))
 
     # commit changes, close connection
     DB.commit()

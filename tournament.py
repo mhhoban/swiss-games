@@ -171,6 +171,12 @@ def swissPairings():
     standings = playerStandings()
     players = len(standings)
 
+    # populate the pairs list using a list comprehension that only runs
+    # for rows from standings with an even index (or defacto even, in the
+    # case of 0) thanks to the 'if x % 2 == 0' limiter to pair each even
+    # indexed player from standings (x) with the player immediately below
+    # them in the rankings (x+1)
+
     pairs = [(standings[x][0], standings[x][1],
               standings[x+1][0], standings[x+1][1])
              for x in range(players) if x % 2 == 0]

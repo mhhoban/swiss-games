@@ -8,14 +8,19 @@ import psycopg2
 
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
+
+    try:
+        DB = psycopg2.connect("dbname=tournament")
+        cursor = DB.cursor()
+        return DB, cursor
+    except:
+        raise
 
 
 def deleteMatches():
     """Remove all the match records from the database."""
 
-    DB = connect()
-    cursor = DB.cursor()
+    DB, cursor = connect()
 
     cursor.execute("UPDATE player_matches SET matches = 0")
     cursor.execute("UPDATE player_wins SET wins = 0")
@@ -28,8 +33,8 @@ def deletePlayers():
 
     deleteMatches()
 
-    DB = connect()
-    cursor = DB.cursor()
+    DB, cursor = connect()
+
     cursor.execute("DELETE FROM player_registry *")
     DB.commit()
     DB.close()
@@ -39,8 +44,7 @@ def countPlayers():
     """Returns the number of players currently registered."""
 
     # establish db connection
-    DB = connect()
-    cursor = DB.cursor()
+    DB, cursor = connect()
 
     # fetch number of players registered
     cursor.execute("SELECT count(*) from player_registry")
@@ -61,8 +65,7 @@ def registerPlayer(name):
     """
 
     # establish db connection
-    DB = connect()
-    cursor = DB.cursor()
+    DB, cursor = connect()
 
     cursor.execute("INSERT INTO player_registry (player_name) VALUES "
                    "(%s)", (name,))
@@ -95,8 +98,7 @@ def playerStandings():
         matches: the number of matches the player has played
     """
 
-    DB = connect()
-    cursor = DB.cursor()
+    DB, cursor = connect()
 
     cursor.execute("select a.player_id, a.player_name, b.wins, c.matches "
                    "from player_registry as a, player_wins as b, "
@@ -119,8 +121,7 @@ def reportMatch(winner, loser):
 
     # increment winner wins:
 
-    DB = connect()
-    cursor = DB.cursor()
+    DB, cursor = connect()
 
     cursor.execute("SELECT wins FROM player_wins WHERE player_id = %s",
                    (winner,))

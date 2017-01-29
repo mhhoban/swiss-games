@@ -46,7 +46,7 @@ def countPlayers():
 
     # fetch number of players registered
     cursor.execute("SELECT count(*) from player_registry")
-    player_count = cursor.fetchall()[0][0]
+    player_count = cursor.fetchone()
     DB.close()
 
     return player_count

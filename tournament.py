@@ -8,17 +8,21 @@ import psycopg2
 
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
+
+    try:
+        DB = psycopg2.connect("dbname=tournament")
+        cursor = DB.cursor()
+        return DB, cursor
+    except:
+        raise
 
 
 def deleteMatches():
     """Remove all the match records from the database."""
 
-    DB = connect()
-    cursor = DB.cursor()
+    DB, cursor = connect()
 
-    cursor.execute("UPDATE player_matches SET matches = 0")
-    cursor.execute("UPDATE player_wins SET wins = 0")
+    cursor.execute("TRUNCATE tournament_matches")
     DB.commit()
     DB.close()
 
@@ -26,11 +30,9 @@ def deleteMatches():
 def deletePlayers():
     """Remove all the player records from the database."""
 
-    deleteMatches()
+    DB, cursor = connect()
 
-    DB = connect()
-    cursor = DB.cursor()
-    cursor.execute("DELETE FROM player_registry *")
+    cursor.execute("TRUNCATE player_registry CASCADE")
     DB.commit()
     DB.close()
 
@@ -39,12 +41,11 @@ def countPlayers():
     """Returns the number of players currently registered."""
 
     # establish db connection
-    DB = connect()
-    cursor = DB.cursor()
+    DB, cursor = connect()
 
     # fetch number of players registered
     cursor.execute("SELECT count(*) from player_registry")
-    player_count = cursor.fetchall()[0][0]
+    player_count = cursor.fetchone()[0]
     DB.close()
 
     return player_count
@@ -61,21 +62,10 @@ def registerPlayer(name):
     """
 
     # establish db connection
-    DB = connect()
-    cursor = DB.cursor()
+    DB, cursor = connect()
 
     cursor.execute("INSERT INTO player_registry (player_name) VALUES "
                    "(%s)", (name,))
-
-    # get id assigned to player:
-    cursor.execute("SELECT MAX(player_id) from player_registry")
-    player_id = cursor.fetchall()[0][0]
-
-    # register player in wins and matches tables:
-    cursor.execute("INSERT INTO player_wins (player_id, wins) VALUES (%s, 0)",
-                   (player_id,))
-    cursor.execute("INSERT INTO player_matches (player_id, matches) "
-                   "VALUES (%s, 0)", (player_id,))
 
     DB.commit()
     DB.close()
@@ -94,18 +84,13 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    DB, cursor = connect()
 
-    DB = connect()
-    cursor = DB.cursor()
-
-    cursor.execute("select a.player_id, a.player_name, b.wins, c.matches "
-                   "from player_registry as a, player_wins as b, "
-                   "player_matches as c where a.player_id = b.player_id and"
-                   " b.player_id = c.player_id ORDER BY wins DESC, "
-                   "matches DESC")
+    cursor.execute("select * from standings")
 
     standings = [(row[0], row[1], row[2], row[3]) for row in cursor.fetchall()]
 
+    DB.close()
     return standings
 
 
@@ -119,31 +104,10 @@ def reportMatch(winner, loser):
 
     # increment winner wins:
 
-    DB = connect()
-    cursor = DB.cursor()
+    DB, cursor = connect()
 
-    cursor.execute("SELECT wins FROM player_wins WHERE player_id = %s",
-                   (winner,))
-
-    new_wins = (cursor.fetchall()[0][0]) + 1
-    cursor.execute("UPDATE player_wins SET wins = %s WHERE player_id = %s",
-                   (new_wins, winner))
-
-    # increment winner matches:
-
-    cursor.execute("SELECT matches FROM player_matches WHERE player_id = %s",
-                   (winner,))
-    new_matches = (cursor.fetchall()[0][0]) + 1
-    cursor.execute("UPDATE player_matches SET matches = %s WHERE player_id "
-                   "= %s", (new_matches, winner))
-
-    # increment loser matches:
-
-    cursor.execute("SELECT matches FROM player_matches WHERE player_id = %s",
-                   (loser,))
-    new_matches = (cursor.fetchall()[0][0]) + 1
-    cursor.execute("UPDATE player_matches SET matches = %s WHERE player_id "
-                   "= %s", (new_matches, loser))
+    cursor.execute("INSERT INTO tournament_matches (winner, loser) VALUES "
+                   "(%s, %s)", (winner, loser))
 
     # commit changes, close connection
     DB.commit()

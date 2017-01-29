@@ -68,16 +68,6 @@ def registerPlayer(name):
     cursor.execute("INSERT INTO player_registry (player_name) VALUES "
                    "(%s)", (name,))
 
-    # get id assigned to player:
-    cursor.execute("SELECT MAX(player_id) from player_registry")
-    player_id = cursor.fetchall()[0][0]
-
-    # register player in wins and matches tables:
-    cursor.execute("INSERT INTO player_wins (player_id, wins) VALUES (%s, 0)",
-                   (player_id,))
-    cursor.execute("INSERT INTO player_matches (player_id, matches) "
-                   "VALUES (%s, 0)", (player_id,))
-
     DB.commit()
     DB.close()
 

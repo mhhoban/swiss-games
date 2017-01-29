@@ -49,3 +49,7 @@ swissPairings() - returns a list of touples of the format (player1 id, player1 n
 player2 id, player2 name) where each touple is the appropriate pairings for the next
 round of tournament competition. This method assumes an even number of players are
 registered for the tournament.
+
+##License:
+Project is freely open source under the terms of the
+[MIT License](http://choosealicense.com/licenses/mit/)

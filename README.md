@@ -1,15 +1,15 @@
-#Swiss Games: Functions For Tracking a Swiss Style Tournament
+# Swiss Games: Functions For Tracking a Swiss Style Tournament
 
 Swiss Games includes methods for conducting and tracking a Swiss
 style tournament in a PostgreSQL database.
 
-##Requirements:
+## Requirements:
 
 Swiss Games requires a PostgreSQL database server,
 was written for PostgreSQL 9.6 and requires Python 2.7 to run
 locally.
 
-##Setup
+## Setup
 
 First, run your environment's PostgreSQL server. It is highly
 recommended, but not required, to run the setup file and work
@@ -20,7 +20,7 @@ by running the setup script:
 python setup.py
 ```
 
-##Using Swiss Games:
+## Using Swiss Games:
 
 Swiss Games uses the following methods:
 
@@ -50,6 +50,6 @@ player2 id, player2 name) where each touple is the appropriate pairings for the 
 round of tournament competition. This method assumes an even number of players are
 registered for the tournament.
 
-##License:
+## License:
 Project is freely open source under the terms of the
 [MIT License](http://choosealicense.com/licenses/mit/)
